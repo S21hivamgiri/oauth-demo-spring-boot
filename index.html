@@ -8,7 +8,8 @@
     <meta name="author" content="Shivam Kumar Giri">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OAuth2 + OIDC + PKCE Demo</title>
-    <script src="./main.js"></script>
+    <!-- ====== These info are from Auth0 dashboard ======-->
+    <script type="module" src="./main.js" defer></script>
     <style>
         body {
             max-width: 100%;
@@ -18,7 +19,7 @@
 
         button {
             font-size: 20px;
-            height: stretch;
+            cursor: pointer;
             height: -webkit-fill-available;
             display: flex;
             align-items: center;
@@ -84,33 +85,36 @@
         }
     </style>
 </head>
-<navbar class="row">
-    <div class="logo">
-        <img src="./assets/auth.png" height="52px" width="52px" />
-        Auth
-    </div>
-    <button id="loginBtn" class="login">
-        <img src="./assets/login.png" height="30px" width="30px" />
-        Login (starts PKCE flow)
-    </button>
-    <button id="serverHealth" class="health">
-        <img src="./assets/health.png" height="52px" width="52px" />
-        Check Server Health
-    </button>
-    <button id="callMeBtn" class="call-api">
-        <img src="./assets/server.png" height="52px" width="52px" />
-        Call Server API /api/me
-    </button>
-    <button id="callAdminBtn" class="call-admin-api">
-        <img src="./assets/admin.png" height="52px" width="52px" />
-        Call Admin only API /api/admin/dashboard
-    </button>
-    <button id="logoutBtn" class="logout">
-        <img src="./assets/logout.png" height="30px" width="30px" />
-        Log Out
-    </button>
-</navbar>
-<h1>OAuth2 / OIDC / PKCE Demo with Auth0</h1>
-<pre id="log">Waiting for Login...</pre>
 
 <body>
+    <navbar class="row">
+        <div class="logo">
+            <img src="./assets/auth.png" height="52px" width="52px" />
+            Auth
+        </div>
+        <button id="loginBtn" class="login">
+            <img src="./assets/login.png" height="30px" width="30px" />
+            Login (starts PKCE flow)
+        </button>
+        <button id="serverHealth" class="health">
+            <img src="./assets/health.png" height="52px" width="52px" />
+            Check Server Health
+        </button>
+        <button id="callMeBtn" class="call-api">
+            <img src="./assets/server.png" height="52px" width="52px" />
+            Call Server API /api/me
+        </button>
+        <button id="callAdminBtn" class="call-admin-api">
+            <img src="./assets/admin.png" height="52px" width="52px" />
+            Call Admin only API /api/admin/dashboard
+        </button>
+        <button id="logoutBtn" class="logout">
+            <img src="./assets/logout.png" height="30px" width="30px" />
+            Log Out
+        </button>
+    </navbar>
+    <h1> OAuth2 / OIDC / PKCE Demo with Auth0 </h1>
+    <pre id="log">Waiting for Login...</pre>
+</body>
+
+</html>
