@@ -18,10 +18,6 @@ public class OuthController {
 
     @GetMapping("/api/me")
     public Object me(@AuthenticationPrincipal Jwt jwt) {
-        System.out.println("=== JWT DEBUG ===");
-        System.out.println("Token value: " + jwt.getTokenValue());
-        System.out.println("All claims: " + jwt.getClaims());
-        System.out.println("=================");
 
         java.util.Map<String, Object> claims = new java.util.HashMap<>();
         claims.put("userId", jwt.getSubject());
@@ -30,4 +26,8 @@ public class OuthController {
         return claims;
     }
 
+    @GetMapping("/api/admin/dashboard")
+    public String adminOnly() {
+        return "If you can see this, your token had ROLE_ADMIN.";
+    }
 }
