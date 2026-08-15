@@ -51,6 +51,26 @@ async function login() {
   window.location.href = `https://${AUTH0_DOMAIN}/authorize?${params.toString()}`;
 }
 
+async function callApi(path) {
+  const token = sessionStorage.getItem("access_token");
+  if (!token) {
+    log("No access token - log in first.");
+    return;
+  }
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const text = await res.text();
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    parsed = text;
+  }
+  log(`${path} -> HTTP ${res.status}`, parsed);
+}
+
+
 async function handleRedirectCallback() {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get("code");
@@ -100,4 +120,7 @@ function logout() {
 
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("logoutBtn").addEventListener("click", logout);
+document
+  .getElementById("serverHealth")
+  .addEventListener("click", () => callApi("/api/health"));
 handleRedirectCallback();
