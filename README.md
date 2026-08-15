@@ -19,3 +19,10 @@ only ever sees a signed JWT and decides what to do based on its claims.
 ## PKCE
 
 PKCE stands for **Proof Key for Code Exchange**. It is a crucial security extension to the OAuth 2.0 authorization code flow. It protects apps from code interception and injection attacks. It is required for public apps like mobile and single-page web apps that cannot safely store a secret key.
+
+## Running Applications
+
+```bash
+python -m http.server 5500 -->  Auth0 registed callback (localhost:5050)
+mvn spring-boot:run        -->  Spring Boot API (localhost:8080)
+```
