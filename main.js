@@ -126,4 +126,7 @@ document
 document
   .getElementById("callMeBtn")
   .addEventListener("click", () => callApi("/api/me"));
+document
+  .getElementById("callAdminBtn")
+  .addEventListener("click", () => callApi("/api/admin/dashboard"));
 handleRedirectCallback();
