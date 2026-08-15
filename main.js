@@ -27,6 +27,7 @@ function generateRandomString(length = 64) {
 
 async function login() {
   const codeVerifier = generateRandomString();
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
   const state = generateRandomString(16);
   // Stash verifier + state locally - we need the verifier again after redirect
   sessionStorage.setItem("pkce_state", state);
