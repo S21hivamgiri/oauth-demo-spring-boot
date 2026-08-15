@@ -1,2 +1,17 @@
 server:
-  port: 8080
+  port: 
+  
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Auth0 tenant issuer URL - MUST end with a trailing slash
+          # e.g. https://dev-abc123.us.auth0.com/
+          issuer-uri: https://shivam-giri.eu.auth0.com/
+
+# Custom app property - the Auth0 API Identifier (audience)
+# Create this under Auth0 Dashboard > Applications > APIs
+auth0:
+  audience: shivam-giri-test-api

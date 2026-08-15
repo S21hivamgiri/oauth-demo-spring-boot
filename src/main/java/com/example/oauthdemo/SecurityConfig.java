@@ -29,11 +29,24 @@ import java.util.stream.Collectors;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+    private String issuer;
+
+    @Value("${auth0.audience}")
+    private String audience;
+
+    // The namespaced custom claim Auth0 injects roles into (set via an Action - see README)
+    private static final String ROLES_CLAIM = "https://yourapp.com/roles";
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable) // stateless API using bearer tokens - CSRF not applicable
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+            );
         return http.build();
     }
 
@@ -47,5 +60,46 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    // Validates: signature (via JWKS), expiry, issuer, AND audience.
+    // Spring only validates issuer+signature by default - audience check must be added manually.
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuer);
+
+        OAuth2TokenValidator<Jwt> audienceValidator = token -> {
+            List<String> audiences = token.getAudience();
+            if (audiences != null && audiences.contains(audience)) {
+                return OAuth2TokenValidatorResult.success();
+            }
+            return OAuth2TokenValidatorResult.failure(
+                new OAuth2Error("invalid_token", "Required audience is missing", null));
+        };
+
+        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuer);
+        OAuth2TokenValidator<Jwt> combined = new DelegatingOAuth2TokenValidator<>(withIssuer, audienceValidator);
+
+        jwtDecoder.setJwtValidator(combined);
+        return jwtDecoder;
+    }
+
+    // Reads the custom "roles" claim Auth0 puts in the token and turns each role
+    // into a Spring "ROLE_x" authority, so @PreAuthorize / hasAuthority checks work.
+    private JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(this::extractAuthorities);
+        return converter;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
+        List<String> roles = jwt.getClaimAsStringList(ROLES_CLAIM);
+        if (roles == null) {
+            return List.of();
+        }
+        return roles.stream()
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+            .collect(Collectors.toList());
     }
 }
