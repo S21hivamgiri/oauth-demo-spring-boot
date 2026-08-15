@@ -123,4 +123,7 @@ document.getElementById("logoutBtn").addEventListener("click", logout);
 document
   .getElementById("serverHealth")
   .addEventListener("click", () => callApi("/api/health"));
+document
+  .getElementById("callMeBtn")
+  .addEventListener("click", () => callApi("/api/me"));
 handleRedirectCallback();
