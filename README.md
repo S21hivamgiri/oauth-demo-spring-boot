@@ -26,3 +26,61 @@ PKCE stands for **Proof Key for Code Exchange**. It is a crucial security extens
 python -m http.server 5500 -->  Auth0 registed callback (localhost:5050)
 mvn spring-boot:run        -->  Spring Boot API (localhost:8080)
 ```
+
+## PKCE flow
+
+[Frontend/Browser] ──login──> [Auth0] ──token──> [Frontend] ──Bearer token──> [Spring Boot Backend]
+
+### Steps
+
+**Step 1**: PKCE — "Prove you're the one who started this"
+
+Before redirecting to Auth0, the frontend does something clever:
+
+- It generates a random secret string called a code verifier
+--It hashes that secret → this hash is called the code challenge
+- It sends Auth0 the challenge (hash), but keeps the verifier (original secret) locally
+
+**Step 2**: Redirect to Auth0 — "Go login over there"
+
+The frontend sends the browser to Auth0's login page, carrying:
+
+- Your app's client ID
+- The code challenge (the hash from Step 1)
+- The redirect URI (where to come back to)
+
+**Step 3**: Auth0 redirects back with a code
+
+After login, Auth0 sends the browser back to your frontend with a short-lived authorization code in the URL — like a claim ticket, not the actual token yet.
+
+**Step 4**: Frontend exchanges the code for tokens
+
+The frontend calls Auth0's /oauth/token endpoint directly, sending:
+
+- The authorization code
+- The code verifier (the original secret from Step 1)
+
+**Step 5**: Frontend calls YOUR backend, attaching the token
+
+Now the frontend talks to your Spring Boot app for the first time — sending the access token as a "Bearer" credential:
+
+**Step 6**: Backend verifies the token (this is what SecurityConfig.java does)
+
+Your Spring Boot app never asked Auth0 "is this token real?" over the network. Instead, it does math locally:
+
+- Signature check — Auth0 signed the token with its private key. Your backend fetches Auth0's public keys (JWTS) once, caches them, and verifies the signature matches. If anyone tampered with the token, this fails instantly.
+
+- Issuer check (iss) — confirms it really came from your Auth0 tenant, not some random source.
+
+- Audience check (aud) — this is the part I added manually in the code, because Spring doesn't do it by default. It confirms the token was issued specifically for your API, not some other app. This directly prevents the "confused deputy" attack we talked about earlier.
+
+- Expiry check (exp) — rejects the token if it's expired.
+
+**Step 7**: RBAC enforcement (this is the extractAuthorities part)
+
+Remember — Auth0 injects a custom claim into the token, like:
+
+The extractAuthorities method reads that claim and translates it into something Spring Security understands: ROLE_ADMIN.
+
+**Step 8**: Get the returned data
+All the hard security work already happened in the filter chain, before your business logic even starts.
