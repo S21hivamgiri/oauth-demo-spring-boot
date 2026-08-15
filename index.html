@@ -10,10 +10,43 @@
     <title>OAuth2 + OIDC + PKCE Demo</title>
     <style>
         body {
-            max-width: 800px;
-            padding: 0 16px;
+            max-width: 100%;
+            padding: 0;
+            margin:0;
+        }
+
+        button {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            padding:20px;
+            border-radius: 10rem;
+        }
+
+        .row {
+            justify-content: space-evenly;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            background-color: bisque;
+            padding:10px;
+            border-bottom: 2px solid rgb(170, 170, 0);
+        }
+        .logo{
+            font-size: 34px;
+            text-transform: uppercase;
+
         }
     </style>
 </head>
+<navbar class="row">
+    <div class="logo"><img src="./auth.png" height="48px" width="48px" />Auth</div>
+    <button id="loginBtn"><img src="./login.png" height="30px" width="30px" /> Login (starts PKCE flow)</button>
+    <button id="callMeBtn">Call /api/me</button>
+    <button id="callAdminBtn">Call /api/admin/dashboard</button>
+    <button id="logoutBtn"><img src="./logout.png" height="30px" width="30px" />Log Out</button>
+</navbar>
+<h1>OAuth2 / OIDC / PKCE Demo</h1>
 
 <body>
