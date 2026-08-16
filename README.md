@@ -91,6 +91,8 @@ All the hard security work already happened in the filter chain, before your bus
 <img width="1920" height="879" alt="image" src="https://github.com/user-attachments/assets/13e6891d-963a-449a-aca6-bfc94afe319a" />
 <img width="1920" height="879" alt="image" src="https://github.com/user-attachments/assets/bbbe8a89-6dc3-4b0c-8a7a-7156975f10e5" />
 <img width="1920" height="879" alt="image" src="https://github.com/user-attachments/assets/a438223f-aa2b-4916-b14d-0fab79a912ac" />
+
+CSRF attack:
 <img width="1920" height="879" alt="image" src="https://github.com/user-attachments/assets/f672e13f-79d6-46e3-a405-62f9723f50d6" />
 
 
