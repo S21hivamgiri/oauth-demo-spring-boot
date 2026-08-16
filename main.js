@@ -24,6 +24,15 @@ function generateRandomString(length = 64) {
   crypto.getRandomValues(array);
   return base64UrlEncode(array.buffer);
 }
+async function sha256(plain) {
+  const data = new TextEncoder().encode(plain);
+  return await crypto.subtle.digest("SHA-256", data);
+}
+
+async function generateCodeChallenge(verifier) {
+  const hashed = await sha256(verifier);
+  return base64UrlEncode(hashed);
+}
 
 async function login() {
   const codeVerifier = generateRandomString();
@@ -70,7 +79,6 @@ async function callApi(path) {
   }
   log(`${path} -> HTTP ${res.status}`, parsed);
 }
-
 
 async function handleRedirectCallback() {
   const urlParams = new URLSearchParams(window.location.search);
