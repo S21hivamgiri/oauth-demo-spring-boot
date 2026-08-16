@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>CSRF attck </title>
+</head>
+
+<body>
+  <h1>You won a prize! Click below.</h1>
+  <h2>Get $50000000 in account</h2>
+
+  <!-- Attack attempt 1: classic auto-submitting form (relies on cookies) -->
+  <button id="csrfForm">Click here to be rich</button>
+
+  <!-- Attack attempt 2: fetch with credentials, hoping cookies/session ride along -->
+  <script>
+    // Attacker has NO way to know or read the victim's access token.
+    // This simulates what a real attacker page can actually do: nothing but guess.
+    function CSRFAttck() {
+      fetch('http://localhost:8080/api/admin/dashboard', {
+        method: 'GET',
+        credentials: 'include' // this only sends COOKIES automatically, not Authorization headers
+      })
+        .then(res => {
+          document.getElementById('result').innerText =
+            'Attack response status: ' + res.status;
+        })
+        .catch(err => {
+          document.getElementById('result').innerText = 'Attack blocked: ' + err;
+        });
+    }
+    document.getElementById('csrfForm').addEventListener('click', CSRFAttck);
+  </script>
+
+  <p id="result">Attempting attack...</p>
+</body>
+
+</html>
